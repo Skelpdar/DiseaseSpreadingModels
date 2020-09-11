@@ -5,3 +5,7 @@ CMakeCache.txt
 cmake_install.cmake
 ODE
 Eigen*
+*.json
+*vcxproj*
+build*
+ODE.sln
