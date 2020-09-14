@@ -5,7 +5,7 @@ project(ODE)
 add_executable(ODE 
 		src/ode.cpp
 		src/rungeKutta.cpp
-)
+		src/Euler.cpp)
 
 #includes CMAKE_SOURCE_DIR so that Eigen/* files are found, idiomatically
 target_include_directories(ODE PRIVATE
