@@ -2,6 +2,8 @@
 #include <fstream>
 #include <Eigen/Dense>
 #include <vector>
+#include <string>
+#include <exception>
 
 #include <rungeKutta.h>
 
@@ -24,24 +26,30 @@ Vector2d SIS(double tn, Vector2d y){
 }
 
 int main(){
+  
     Vector2d y0;
     y0(0) = 70;
     y0(1) = 30;
 
     std::vector<Vector2d> data;
     std::vector<Vector2d> error;
-
+ 
     rungeKutta(y0, SIS, 10, 100, data, error);
-
+    std::cout << data[0]; 
     std::ofstream SISFile;
     SISFile.open("SISSolution.txt");
-
+    if(!SISFile)
+    {
+        std::cout << "Could not open file for writing";
+    }
     for(int i=0; i<data.size(); i++){
         SISFile << data[i] << std::endl;
         SISFile << error[i] << std::endl;
     }
 
     SISFile.close();
+
+
 
     return 0;
 }

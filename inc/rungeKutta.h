@@ -17,7 +17,7 @@ VectorType rungeKuttaStep(VectorType yn, Function func, double h, double tn){
 }
 
 template <typename VectorType, typename Function>
-VectorType rungeKutta(VectorType y0, Function func, double h, int iterations, std::vector<VectorType>& data, std::vector<VectorType>& error){
+void rungeKutta(VectorType y0, Function func, double h, int iterations, std::vector<VectorType>& data, std::vector<VectorType>& error){
     VectorType yn = y0;
     double t = 0;
     for(int i=0; i<iterations; i++){
