@@ -16,3 +16,16 @@ Methods
 
 Error
 -Num error estimet for O(h^m) algorithm
+
+Installation:
+```
+git clone https://github.com/Skelpdar/DiseaseSpreadingModels.git
+```
+
+Download [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) and copy the Eigen header-directory to the root of this project. 
+
+Build with:
+```
+cmake .
+make
+```
