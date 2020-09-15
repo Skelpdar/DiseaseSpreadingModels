@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-filename = "SISSolution.txt"
+filename = "C:\Users\Harald\Documents\Universty_papers\FysN03\DiseaseSpreading\SISSolutionEx1"
 
 with open(filename) as f:
     lines = f.readlines()
