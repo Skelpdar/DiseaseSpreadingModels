@@ -50,17 +50,17 @@ for filename in filenames:
     #plt.fill_between(X,
     #    [S[k]-Serr[k] for k in range(0,len(S))],
     #    [S[k]+Serr[k] for k in range(0, len(S))])
-    #plt.plot(X,I, label = "I")
-    #plt.fill_between(X,
-    #    [I[k]-Ierr[k] for k in range(0,len(I))],
-    #    [I[k]+Ierr[k] for k in range(0, len(I))])
-    plt.plot(X,R, label = filename[10:14], color=colors[filenames.index(filename)])
+    plt.plot(X,I, label = filename[10:14], color=colors[filenames.index(filename)])
     plt.fill_between(X,
-        [R[k]-Rerr[k] for k in range(0,len(R))],
-        [R[k]+Rerr[k] for k in range(0, len(R))])
-plt.xlabel("t(days)")
+        [I[k]-Ierr[k] for k in range(0,len(I))],
+        [I[k]+Ierr[k] for k in range(0, len(I))])
+    #plt.plot(X,R, label = filename[10:14], color=colors[filenames.index(filename)])
+    #plt.fill_between(X,
+    #    [R[k]-Rerr[k] for k in range(0,len(R))],
+    #    [R[k]+Rerr[k] for k in range(0, len(R))])
+plt.xlabel("t [days]")
+plt.ylabel("Infectious [# of People]")
 plt.legend()
-
+plt.title("Comparison of the spread constant beta")
 #plt.yscale("log")
-
 plt.show()
