@@ -56,55 +56,60 @@ Vector4d InfV;
 Vector4d RecV;
 
 //SIR parameters given as vectors
-Vector4d TInf =  Vector4d (1, 1, 1, 1);
+Vector4d TInf =  Vector4d (1, 1, 0.3, 0.3);
 double TRec =  0.14; //recovery rate is the same for all populations
-Vector4d TVac =  Vector4d (0, 0, 0, 0);
+Vector4d TVac =  Vector4d (0.05, 0.05, 0.05, 0.05);
 
 
 
 
-//Vector function containing derivatives of all pops, y(S1, S2, S3, S4,, I1, I2, I3, I4 R1, R2, R3, R4)
+//Vector function containing derivatives of all pops, y(S1, S2, S3, S4, I1, I2, I3, I4 R1, R2, R3, R4)
 VectorXd TravelSIR(double tn, VectorXd y){
     VectorXd sol(12);
-    Vector4d S = Vector4d (y(0,0), y(1,0), y(2,0), y(3,0));
-    Vector4d R = Vector4d (y(4,0), y(5,0), y(6,0), y(7,0));
-    Vector4d I = Vector4d (y(8,0), y(9,0), y(10,0), y(11,0));
+    Vector4d S;
+        S << y(0), y(1), y(2), y(3);
+    Vector4d I;
+        I << y(4), y(5), y(6), y(7);
+    Vector4d R;
+        R << y(8), y(9), y(10), y(11);
 
     //Traveling parameters into relevant population, balanced w_nm = w_mn required
     MatrixXd Tcoff(4,4);
-    Tcoff << 0, 0.1, 0.1, 0.1,
-             0.1, 0, 0.1, 0.1,
-             0.1, 0.1, 0, 0.1,
-             0.1, 0.1, 0.1, 0;
+    Tcoff <<   0, 0.01, 0.1/3, 0,
+             0.01,   0,   0, 0.1/3,
+             0.1,   0,   0, 0,
+               0, 0.1,   0, 0;
     //Sn
     for (int i = 0; i < 4; i++) {//for each pop
-        double sumT = 0;
+        double sumTS = 0;
         for (int j = 0; j < 4; j++) {//calculate sum of traveling, from j going to i
-        if (j != i) {
-            sumT += Tcoff(i, j)*S(j) - Tcoff(j,i)*S(i);
+            if (j != i) {
+                sumTS += Tcoff(i, j)*S(j) - Tcoff(j, i)*S(i);
+            };
         };
+        sol(i) = -TInf(i)*S(i)*I(i)/(S(i)+R(i)+I(i))- TVac(i)*S(i) + sumTS;       
         };
-        sol(i,0) = -TInf(i)*S(i)*I(i)/(S(i)+R(i)+I(i))- TVac(i)*S(i) + sumT;        
-        };
+
     //In
     for (int i = 0; i < 4; i++) {//for each pop
-        double sumT = 0;
+        double sumTI = 0;
         for (int j = 0; j < 4; j++) {//calculate sum of traveling, from j going to i
-        if (j != i) {
-            sumT += Tcoff(i, j)*I(j) - Tcoff(j,i)*I(i);
+            if (j != i) {
+                sumTI += Tcoff(i, j)*I(j) - Tcoff(j, i)*I(i);
+            };
         };
+        sol(i+4) = TInf(i)*S(i)*I(i)/(S(i)+R(i)+I(i)) - TRec*I(i) + sumTI;        
         };
-        sol(i+4,0) = TInf(i)*S(i)*I(i)/(S(i)+R(i)+I(i))- TRec*I(i) + sumT;        
-        };
+
     //Rn
     for (int i = 0; i < 4; i++) {//for each pop
-        double sumT = 0;
+        double sumTR = 0;
         for (int j = 0; j < 4; j++) {//calculate sum of traveling, from j going to i
-        if (j != i) {
-            sumT += Tcoff(i, j)*R(j) - Tcoff(j,i)*R(i);
+            if (j != i) {
+                sumTR += Tcoff(i, j)*R(j) - Tcoff(j, i)*R(i);
+            };
         };
-        };
-        sol(i+8,0) = TVac(i)*S(i) + TRec*I(i) + sumT;        
+        sol(i+8) = TVac(i)*S(i) + TRec*I(i) + sumTR;        
         };
     return sol;
 };
@@ -154,11 +159,11 @@ int main(){
     std::vector<VectorXd> error;
 
     VectorXd initPop(12);
-    initPop <<  800, 800, 800, 800, 
-                10, 0, 0, 0,
+    initPop <<  200, 200, 590, 600, 
+                0, 0, 10, 0,
                 0, 0, 0, 0;
  
-    rungeKutta(initPop, TravelSIR, 0.1, 300, data, error);
+    rungeKutta(initPop, TravelSIR, 0.01, 3000, data, error);
     std::ofstream SISFile;
     SISFile.open("SIRTravel.txt");
 
