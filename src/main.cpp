@@ -49,6 +49,27 @@ Vector3d SIR(double tn, Vector3d y) {
     return derivatives;
 }
 
+double b = 0.45;
+double a = 0.18;
+double sigma = 0.41;
+
+//Missing some parameters
+Vector4d SEIR(double tn, Vector4d y){
+	Vector4d derivatives;
+    double S = y(0,0);
+	double E = y(1,0);
+    double I = y(2,0);
+    double R = y(3,0);
+    double N = S + E + I + R;
+
+	derivatives(0) = -b*I*S/N;
+	derivatives(1) = b*I*S/N-a*E;
+	derivatives(2) = a*E - sigma*I;
+	derivatives(3) = sigma*I;
+
+	return derivatives;
+}
+
 //SIR with traveling
 //populations
 Vector4d SusV;//S1 to S4 with initial suseptible population in four diferent groups
@@ -100,7 +121,6 @@ VectorXd TravelSIR(double tn, VectorXd y){
         };
         sol(i+4) = TInf(i)*S(i)*I(i)/(S(i)+R(i)+I(i)) - TRec*I(i) + sumTI;        
         };
-
     //Rn
     for (int i = 0; i < 4; i++) {//for each pop
         double sumTR = 0;
@@ -155,7 +175,8 @@ int main(){
     }
 */
 //SIR with traveling
-    std::vector<VectorXd> data;
+    /*
+	std::vector<VectorXd> data;
     std::vector<VectorXd> error;
 
     VectorXd initPop(12);
@@ -173,5 +194,49 @@ int main(){
     }
 
     SISFile.close();
+	*/
+	
+	//SEIR
+	std::vector<Vector4d> data1;
+	std::vector<Vector4d> error1;
+	std::vector<Vector4d> data2;
+	std::vector<Vector4d> error2;
+	std::vector<Vector4d> data3;
+	std::vector<Vector4d> error3;
+	
+	Vector4d y0;
+	y0(0) = 179000;
+	y0(1) = 1000;
+	y0(2) = 0;
+	y0(3) = 0;
+
+	rungeKutta(y0, SEIR, 0.1, 365*10, data1, error1);
+	rungeKutta(y0, SEIR, 0.5, 365*2, data2, error2);
+	rungeKutta(y0, SEIR, 1.0, 365, data3, error3);
+	
+	std::ofstream SISFile1;
+    SISFile1.open("SEIR1.txt");
+	std::ofstream SISFile2;
+    SISFile2.open("SEIR2.txt");
+	std::ofstream SISFile3;
+    SISFile3.open("SEIR3.txt");
+
+    for(int i=0; i<data1.size(); i++){
+        SISFile1 << data1[i] << std::endl;
+        SISFile1 << error1[i] << std::endl;
+    }
+    for(int i=0; i<data2.size(); i++){
+        SISFile2 << data2[i] << std::endl;
+        SISFile2 << error2[i] << std::endl;
+    }
+    for(int i=0; i<data3.size(); i++){
+        SISFile3 << data3[i] << std::endl;
+        SISFile3 << error3[i] << std::endl;
+    }
+
+    SISFile1.close();
+    SISFile2.close();
+    SISFile3.close();
+
     return 0;
 }
